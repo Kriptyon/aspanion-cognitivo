@@ -6,7 +6,7 @@ import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 
-// Configuración para el modo oscuro
+// Configuración para Modo Oscuro
 private val DarkColorScheme = darkColorScheme(
     primary = AzulCieloSuave,
     secondary = VerdeMenta,
@@ -19,7 +19,7 @@ private val DarkColorScheme = darkColorScheme(
     onSurface = GrisSuaveTexto
 )
 
-// Configuración para el modo normal (luz)
+// Configuración para Modo Claro
 private val LightColorScheme = lightColorScheme(
     primary = AzulCieloSuave,
     secondary = VerdeMenta,
@@ -37,10 +37,10 @@ fun AspanionTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     content: @Composable () -> Unit
 ) {
-    val colorScheme = if (darkTheme) DarkColorScheme else LightColorScheme
+    val colors = if (darkTheme) DarkColorScheme else LightColorScheme
 
     MaterialTheme(
-        colorScheme = colorScheme,
+        colorScheme = colors,
         typography = Typography,
         content = content
     )
