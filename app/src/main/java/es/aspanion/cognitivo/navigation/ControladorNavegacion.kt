@@ -4,7 +4,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import es.aspanion.cognitivo.model.PlantillaPintar
+// IMPORTANTE: Asegúrate de que este import coincida con la ubicación de tu modelo
+import es.aspanion.cognitivo.ui.juegos.pintar.model.PlantillaPintar
 import es.aspanion.cognitivo.ui.inicio.PantallaInicioAspanion
 import es.aspanion.cognitivo.ui.menu.PantallaMenuJuegos
 import es.aspanion.cognitivo.ui.juegos.memory.JuegoMemory
@@ -20,13 +21,13 @@ fun ControladorNavegacion() {
 
     Surface(modifier = Modifier.fillMaxSize()) {
         when (pantallaActual) {
-            "inicio" -> PantallaInicioAspanion {
-                nivelGlobal = it
+            "inicio" -> PantallaInicioAspanion { nivel ->
+                nivelGlobal = nivel
                 pantallaActual = "menu_juegos"
             }
             "menu_juegos" -> PantallaMenuJuegos(
                 nivelGlobal,
-                { pantallaActual = it },
+                { juego -> pantallaActual = juego },
                 { pantallaActual = "inicio" }
             )
             "memory" -> JuegoMemory(nivelGlobal) {
@@ -35,8 +36,8 @@ fun ControladorNavegacion() {
             "sudoku" -> JuegoSudoku(nivelGlobal) {
                 pantallaActual = "menu_juegos"
             }
-            "seleccion_plantilla" -> PantallaSeleccionPlantilla(nivelGlobal) {
-                plantillaSeleccionada = it
+            "seleccion_plantilla" -> PantallaSeleccionPlantilla(nivelGlobal) { p ->
+                plantillaSeleccionada = p
                 pantallaActual = "pintar"
             }
             "pintar" -> JuegoPintarNumeros(plantillaSeleccionada!!) {

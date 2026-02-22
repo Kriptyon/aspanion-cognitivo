@@ -1,8 +1,7 @@
 package es.aspanion.cognitivo.ui.juegos.sudoku.model
 
 data class CeldaSudoku(
-    val fila: Int,
-    val columna: Int,
-    val valorCorrecto: Int,
-    var valorActual: Int? = null
+    val id: Int,
+    var valorIndex: Int = 0,
+    var esError: Boolean = false
 )
