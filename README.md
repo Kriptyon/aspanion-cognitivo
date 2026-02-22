@@ -52,5 +52,41 @@ Since I cannot upload copyrighted assets, you must manually add these to the `ap
 ## 📄 License
 This project is licensed under the **Apache License 2.0**. It’s open, it’s free, and it’s for the kids. See the [LICENSE](LICENSE) file for details.
 
+## 📂 Project Structure
+```bash
+├── MainActivity.kt
+├── navigation
+│   └── ControladorNavegacion.kt
+└── ui
+    ├── components
+    │   └── BotonMenu.kt
+    ├── inicio
+    │   └── PantallaInicioAspanion.kt
+    ├── juegos
+    │   ├── memory
+    │   │   ├── JuegoMemory.kt
+    │   │   └── model
+    │   │       └── Carta.kt
+    │   ├── pintar
+    │   │   ├── JuegoPintarNumeros.kt
+    │   │   ├── PantallaSeleccionPlantilla.kt
+    │   │   ├── data
+    │   │   │   └── PlantillasProvider.kt
+    │   │   └── model
+    │   │       ├── CeldaPintar.kt
+    │   │       └── PlantillaPintar.kt
+    │   └── sudoku
+    │       ├── JuegoSudoku.kt
+    │       └── model
+    │           └── CeldaSudoku.kt
+    ├── menu
+    │   └── PantallaMenuJuegos.kt
+    └── theme
+        ├── Color.kt
+        ├── Theme.kt
+        └── Type.kt
+```
+
+
 ---
 Developed with ❤️ for the brave ones at **Aspanion**.
