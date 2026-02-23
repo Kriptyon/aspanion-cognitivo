@@ -29,8 +29,11 @@ The application adapts its difficulty across three age ranges:
     * **Visual Support:** Features thick line markers to clearly separate 2x2 blocks, helping children understand the game's logic.
     * Uses animal icons for younger kids and numbers for the experts.
 4. **Shadow Matching (Sombras Chinas) 🌑:**
-    * **Infinite Loop:** An endless mode where the app generates random animal challenges to keep the fun going.
+    * **Infinite Loop:** An endless mode where the app generates random animal challenges to adivinate.
     * **Visual Logic:** Children must match a solid black animal silhouette (cleverly generated from emojis) with its corresponding real-life photo.
+5. **Simon Animal 🎵:**
+    * **Sequential Memory:** A "follow the leader" style game where children must repeat an ever-growing sequence of animal flashes.
+    * **Difficulty Scaling:** Sequence speed increases based on the selected age range (Peques vs Experts).
 
 ## 🛠️ Installation & Setup
 
@@ -78,6 +81,10 @@ This project is licensed under the **Apache License 2.0**. It’s open, it’s f
     │   │   └── model
     │   │       ├── CeldaPintar.kt
     │   │       └── PlantillaPintar.kt
+    │   ├── simon
+    │   │   ├── JuegoSimon.kt
+    │   │   └── model
+    │   │       └── BotonSimon.kt
     │   ├── sombras
     │   │   ├── JuegoSombras.kt
     │   │   └── model
@@ -93,5 +100,6 @@ This project is licensed under the **Apache License 2.0**. It’s open, it’s f
         ├── Theme.kt
         └── Type.kt
 ```
+
 ---
 Developed with ❤️ for the brave ones at **Aspanion**.

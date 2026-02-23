@@ -17,9 +17,7 @@ fun PantallaMenuJuegos(
     alCambiarEdad: () -> Unit
 ) {
     Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(24.dp),
+        modifier = Modifier.fillMaxSize().padding(24.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         TextButton(onClick = alCambiarEdad, modifier = Modifier.align(Alignment.End)) {
@@ -27,31 +25,27 @@ fun PantallaMenuJuegos(
         }
 
         Spacer(modifier = Modifier.height(16.dp))
+        Text(text = "¿A qué jugamos?", fontSize = 30.sp, color = Color.Black)
+        Spacer(modifier = Modifier.height(30.dp))
 
-        Text(
-            text = "¿A qué jugamos?",
-            fontSize = 30.sp,
-            color = Color.Black,
-            style = MaterialTheme.typography.headlineMedium
-        )
-
-        Spacer(modifier = Modifier.height(40.dp))
-
-        // BOTÓN 1: MEMORY
+        // FILA 1
         BotonMenu("Memory 🧠", Color(0xFFC8E6C9)) { alElegirJuego("memory") }
+        Spacer(modifier = Modifier.height(12.dp))
 
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // BOTÓN 2: PINTAR
+        // FILA 2
         BotonMenu("Pintar Animales 🎨", Color(0xFFFFE0B2)) { alElegirJuego("seleccion_plantilla") }
+        Spacer(modifier = Modifier.height(12.dp))
 
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // BOTÓN 3: SOMBRAS CHINAS (¡El nuevo!)
+        // FILA 3
         BotonMenu("Sombras Chinas 🌑", Color(0xFFD1C4E9)) { alElegirJuego("sombras") }
-        // BOTÓN 4: SUDOKU (Solo para medianos y mayores)
+        Spacer(modifier = Modifier.height(12.dp))
+
+        // FILA 4: EL NUEVO SIMÓN
+        BotonMenu("Simón Animal 🎵", Color(0xFFF8BBD0)) { alElegirJuego("simon") }
+
+        // FILA 5: SUDOKU (Solo mayores)
         if (nivel != "peque") {
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(12.dp))
             BotonMenu("Sudoku 🦁", Color(0xFFFFF9C4)) { alElegirJuego("sudoku") }
         }
     }
