@@ -8,9 +8,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+
+// Imports de tus pantallas
 import es.aspanion.cognitivo.R
 import es.aspanion.cognitivo.ui.inicio.PantallaInicioAspanion
 import es.aspanion.cognitivo.ui.menu.PantallaMenuJuegos
@@ -25,9 +30,11 @@ import es.aspanion.cognitivo.ui.juegos.pintar.model.PlantillaPintar
 @Composable
 fun ControladorNavegacion() {
     val context = LocalContext.current
+    val lifecycleOwner = LocalLifecycleOwner.current
 
-    // --- MÚSICA ---
+    // --- MÚSICA Y ESTADOS ---
     var musicaActivada by remember { mutableStateOf(true) }
+
     val mediaPlayer = remember {
         MediaPlayer.create(context, R.raw.musica_fondo).apply {
             isLooping = true
@@ -35,15 +42,31 @@ fun ControladorNavegacion() {
         }
     }
 
-    LaunchedEffect(musicaActivada) {
-        if (musicaActivada) mediaPlayer.start() else mediaPlayer.pause()
-    }
-
-    DisposableEffect(Unit) {
+    // Gestión del Ciclo de Vida (Para que la música NO suene en la Home de Android)
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            when (event) {
+                Lifecycle.Event.ON_PAUSE -> {
+                    mediaPlayer.pause()
+                }
+                Lifecycle.Event.ON_RESUME -> {
+                    if (musicaActivada) {
+                        mediaPlayer.start()
+                    }
+                }
+                else -> {}
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
         onDispose {
-            mediaPlayer.stop()
+            lifecycleOwner.lifecycle.removeObserver(observer)
             mediaPlayer.release()
         }
+    }
+
+    // Reacción al botón manual
+    LaunchedEffect(musicaActivada) {
+        if (musicaActivada) mediaPlayer.start() else mediaPlayer.pause()
     }
 
     // --- NAVEGACIÓN ---
@@ -78,7 +101,7 @@ fun ControladorNavegacion() {
             }
         }
 
-        // --- BOTÓN MUSICAL PERSONALIZADO ---
+        // --- BOTÓN MUSICAL (Corchea y Silencio de Negra) ---
         IconButton(
             onClick = { musicaActivada = !musicaActivada },
             modifier = Modifier
@@ -94,10 +117,9 @@ fun ControladorNavegacion() {
                 )
                 .size(65.dp)
         ) {
-            // Usamos símbolos de texto para la corchea y el silencio de negra
             Text(
                 text = if (musicaActivada) "♪" else "𝄽",
-                fontSize = if (musicaActivada) 45.sp else 35.sp, // Ajustamos el tamaño según el símbolo
+                fontSize = if (musicaActivada) 45.sp else 35.sp,
                 color = if (musicaActivada) Color(0xFFE91E63) else Color.Gray,
                 fontWeight = FontWeight.Bold
             )

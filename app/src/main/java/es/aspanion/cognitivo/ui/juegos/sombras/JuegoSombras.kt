@@ -1,5 +1,7 @@
 package es.aspanion.cognitivo.ui.juegos.sombras
 
+import android.media.AudioAttributes
+import android.media.SoundPool
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -12,6 +14,7 @@ import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -21,8 +24,26 @@ import es.aspanion.cognitivo.ui.juegos.sombras.model.NivelSombras
 
 @Composable
 fun JuegoSombras(nivelDificultad: String, alVolver: () -> Unit) {
+    val context = LocalContext.current
 
-    // Lista de todos tus animales disponibles en drawable
+    // --- 1. CONFIGURACIÓN DE SONIDO (Solo Wrong) ---
+    val soundPool = remember {
+        val attributes = AudioAttributes.Builder()
+            .setUsage(AudioAttributes.USAGE_GAME)
+            .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+            .build()
+        SoundPool.Builder().setMaxStreams(1).setAudioAttributes(attributes).build()
+    }
+
+    val idWrong = remember { soundPool.load(context, R.raw.wrong, 1) }
+
+    fun sonarWrong() = soundPool.play(idWrong, 1f, 1f, 1, 0, 1f)
+
+    DisposableEffect(Unit) {
+        onDispose { soundPool.release() }
+    }
+
+    // --- 2. LÓGICA DE BANCO DE ANIMALES ---
     val bancoAnimales = remember {
         listOf(
             "🐥" to R.drawable.pollito_real,
@@ -34,17 +55,14 @@ fun JuegoSombras(nivelDificultad: String, alVolver: () -> Unit) {
         )
     }
 
-    // Función que genera un nivel aleatorio mezclando las opciones
     fun generarNuevoNivel(): NivelSombras {
         val correcto = bancoAnimales.random()
-        // Elegimos otros 2 animales al azar que no sean el correcto
         val incorrectos = bancoAnimales.filter { it.second != correcto.second }.shuffled().take(2)
         val opcionesMezcladas = (incorrectos + correcto).map { it.second }.shuffled()
 
         return NivelSombras(correcto.first, correcto.second, opcionesMezcladas)
     }
 
-    // Estados: nivel actual y si ha acertado
     var nivelActual by remember { mutableStateOf(generarNuevoNivel()) }
     var haAcertado by remember { mutableStateOf(false) }
 
@@ -52,7 +70,6 @@ fun JuegoSombras(nivelDificultad: String, alVolver: () -> Unit) {
         modifier = Modifier.fillMaxSize().background(Color.White).padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // Botón para salir cuando el niño quiera
         TextButton(onClick = alVolver, modifier = Modifier.align(Alignment.Start)) {
             Text("⬅ Ir a otro juego", fontSize = 16.sp, color = Color.Gray)
         }
@@ -61,7 +78,7 @@ fun JuegoSombras(nivelDificultad: String, alVolver: () -> Unit) {
 
         Spacer(Modifier.height(40.dp))
 
-        // SECCIÓN DE LA SOMBRA (Silueta negra real)
+        // SECCIÓN DE LA SOMBRA
         Box(
             modifier = Modifier
                 .size(220.dp)
@@ -76,7 +93,6 @@ fun JuegoSombras(nivelDificultad: String, alVolver: () -> Unit) {
                     .graphicsLayer(alpha = 0.99f)
                     .drawWithContent {
                         drawContent()
-                        // Este comando "tapa" el emoji con negro puro siguiendo su forma
                         drawRect(color = Color.Black, blendMode = BlendMode.SrcAtop)
                     }
             )
@@ -88,7 +104,7 @@ fun JuegoSombras(nivelDificultad: String, alVolver: () -> Unit) {
 
         Spacer(Modifier.height(20.dp))
 
-        // SECCIÓN DE OPCIONES (Fotos reales JPEG)
+        // SECCIÓN DE OPCIONES (Fotos reales)
         Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
             nivelActual.opciones.forEach { imagenResId ->
                 Card(
@@ -96,12 +112,18 @@ fun JuegoSombras(nivelDificultad: String, alVolver: () -> Unit) {
                         .size(100.dp)
                         .border(
                             width = if (haAcertado && imagenResId == nivelActual.imagenReal) 4.dp else 0.dp,
-                            color = Color(0xFF4CAF50), // Verde si acierta
+                            color = Color(0xFF4CAF50),
                             shape = RoundedCornerShape(12.dp)
                         )
                         .clickable {
-                            if (!haAcertado && imagenResId == nivelActual.imagenReal) {
-                                haAcertado = true
+                            if (!haAcertado) {
+                                if (imagenResId == nivelActual.imagenReal) {
+                                    haAcertado = true
+                                    // Aquí no suena nada por petición del usuario
+                                } else {
+                                    // SI FALLA: Suena el error
+                                    sonarWrong()
+                                }
                             }
                         },
                     elevation = CardDefaults.cardElevation(6.dp)
@@ -110,20 +132,18 @@ fun JuegoSombras(nivelDificultad: String, alVolver: () -> Unit) {
                         painter = painterResource(imagenResId),
                         contentDescription = null,
                         modifier = Modifier.fillMaxSize(),
-                        contentScale = ContentScale.Crop // Para que la foto rellene el cuadro
+                        contentScale = ContentScale.Crop
                     )
                 }
             }
         }
 
-        // REFUERZO POSITIVO Y BOTÓN SIGUIENTE
         if (haAcertado) {
             Spacer(Modifier.height(30.dp))
             Text("¡LO HAS LOGRADO! ✨", fontSize = 28.sp, fontWeight = FontWeight.Black, color = Color(0xFFE91E63))
 
             Button(
                 onClick = {
-                    // GENERAMOS UN NIVEL NUEVO AL HACER CLICK
                     nivelActual = generarNuevoNivel()
                     haAcertado = false
                 },
